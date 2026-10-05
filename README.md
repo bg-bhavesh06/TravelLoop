@@ -20,26 +20,28 @@
 ## 🛠️ Tech Stack
 
 ### Frontend (Client)
-| Technology | Purpose |
-|---|---|
-| **React + Vite** | High-performance UI Framework & Build Tool |
-| **React Router DOM** | Client-side Routing & Navigation |
-| **Framer Motion** | Advanced Animations & Transitions |
-| **Socket.io-client** | Real-time chat messaging |
-| **Axios** | HTTP Client |
-| **Recharts** | Interactive Data Visualizations |
-| **Vanilla CSS** | Custom Premium Glassmorphism Design System |
+
+| Technology           | Purpose                                    |
+| -------------------- | ------------------------------------------ |
+| **React + Vite**     | High-performance UI Framework & Build Tool |
+| **React Router DOM** | Client-side Routing & Navigation           |
+| **Framer Motion**    | Advanced Animations & Transitions          |
+| **Socket.io-client** | Real-time chat messaging                   |
+| **Axios**            | HTTP Client                                |
+| **Recharts**         | Interactive Data Visualizations            |
+| **Vanilla CSS**      | Custom Premium Glassmorphism Design System |
 
 ### Backend (Server)
-| Technology | Purpose |
-|---|---|
-| **Node.js + Express** | Robust REST API Server |
-| **MongoDB Atlas + Mongoose** | Cloud Database & Schema Validation |
-| **Socket.io** | WebSocket server for real-time Premium Chats |
-| **Razorpay SDK** | Payment Gateway Integration |
-| **Groq SDK (LLaMA 3.3)** | High-speed AI Itinerary Generation |
-| **Cloudinary + Multer** | Cloud Storage & Image File Handling |
-| **JWT & Bcrypt.js** | Secure Authentication & Password Hashing |
+
+| Technology                   | Purpose                                      |
+| ---------------------------- | -------------------------------------------- |
+| **Node.js + Express**        | Robust REST API Server                       |
+| **MongoDB Atlas + Mongoose** | Cloud Database & Schema Validation           |
+| **Socket.io**                | WebSocket server for real-time Premium Chats |
+| **Razorpay SDK**             | Payment Gateway Integration                  |
+| **Groq SDK (LLaMA 3.3)**     | High-speed AI Itinerary Generation           |
+| **Cloudinary + Multer**      | Cloud Storage & Image File Handling          |
+| **JWT & Bcrypt.js**          | Secure Authentication & Password Hashing     |
 
 ---
 
@@ -74,6 +76,7 @@ Traveloop/
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - **Node.js** v18+
 - **MongoDB Atlas** account (or local MongoDB)
 - **Groq API Key** (free at [console.groq.com](https://console.groq.com))
@@ -131,12 +134,14 @@ cd ../client && npm install
 Open **two terminals**:
 
 **Terminal 1 — Backend:**
+
 ```bash
 cd server
 npm run dev
 ```
 
 **Terminal 2 — Frontend:**
+
 ```bash
 cd client
 npm run dev
@@ -144,13 +149,14 @@ npm run dev
 
 The app will be available at **http://localhost:5173**.
 
-*(Note: Vite handles the API proxies automatically, seamlessly bridging the frontend to the backend's `/api` and `/socket.io` endpoints).*
+_(Note: Vite handles the API proxies automatically, seamlessly bridging the frontend to the backend's `/api` and `/socket.io` endpoints)._
 
 ---
 
 ## 💬 Premium Traveler Chat & Monetization
 
 A core feature of Traveloop is the **Premium Chat** system:
+
 1. Users browse the **Community Page** and find interesting trips.
 2. They click **Chat With Traveler** and are presented with a beautiful **Razorpay checkout**.
 3. Upon successful payment of ₹20, the backend verifies the Razorpay signature and instantly creates a private **Socket.io** chat room.
@@ -167,5 +173,5 @@ This project is licensed under the **MIT License**.
 
 ## 👤 Author
 
-**Prakash Gupta**  
+**Bhavesh Ganwani**
 Built with ❤️ for the Odoo Hackathon
