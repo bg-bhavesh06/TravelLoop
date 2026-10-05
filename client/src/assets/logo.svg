@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <defs>
+    <linearGradient id="brandGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#22D3EE" />
+      <stop offset="50%" stop-color="#3B82F6" />
+      <stop offset="100%" stop-color="#8B5CF6" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2.5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <g transform="translate(-8, -8) scale(1.15)" filter="url(#glow)">
+    <!-- Orbit Swoosh -->
+    <path d="M 16 68 C 12 78 25 86 45 80 C 58 76 65 65 70 55 C 65 64 52 72 38 70 C 26 68 18 65 16 68 Z" fill="url(#brandGrad)" opacity="0.85" />
+    
+    <!-- Airplane Body -->
+    <path d="M 78 20 
+             C 82 20, 82 25, 78 26 
+             C 68 35, 60 45, 55 54 
+             L 64 48 
+             C 68 52, 75 58, 76 60 
+             C 77 62, 74 62, 72 62 
+             L 48 62 
+             C 46 58, 45 55, 43 53 
+             L 20 58 
+             C 18 58, 18 56, 20 55 
+             C 40 45, 60 30, 78 20 Z" 
+          fill="url(#brandGrad)" />
+  </g>
+</svg>
