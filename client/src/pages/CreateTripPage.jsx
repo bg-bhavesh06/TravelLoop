@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MapPin, Calendar, FileText, Image, Plus, ArrowRight } from 'lucide-react';
+import { MapPin, Calendar, FileText, Image, Plus, ArrowRight, Wallet } from 'lucide-react';
 import { tripService } from '../services/tripService';
 import toast from 'react-hot-toast';
 
@@ -10,7 +10,7 @@ const CreateTripPage = () => {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     title: '', description: '', startDate: '', endDate: '',
-    destinations: '', coverPhoto: '',
+    destinations: '', coverPhoto: '', totalBudget: '',
   });
 
   const handleSubmit = async (e) => {
@@ -23,6 +23,7 @@ const CreateTripPage = () => {
     try {
       const payload = {
         ...form,
+        totalBudget: Number(form.totalBudget) || 0,
         destinations: form.destinations.split(',').map(d => d.trim()).filter(Boolean),
       };
       const trip = await tripService.createTrip(payload);
@@ -138,6 +139,18 @@ const CreateTripPage = () => {
                 onChange={e => setForm(p => ({ ...p, coverPhoto: e.target.value }))}
                 className="input-field"
                 placeholder="https://example.com/photo.jpg"
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>
+                <Wallet style={{ width: '14px', height: '14px', color: '#2563EB' }} /> Total Trip Budget (₹)
+              </label>
+              <input
+                type="number"
+                value={form.totalBudget}
+                onChange={e => setForm(p => ({ ...p, totalBudget: e.target.value }))}
+                className="input-field"
+                placeholder="e.g. 25000"
               />
             </div>
           </div>

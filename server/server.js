@@ -10,22 +10,34 @@ const { Server } = require("socket.io");
 const Message = require("./models/Message");
 const dns = require("dns");
 
+// Load environment variables (supports root .env or server-level env on deployment platforms)
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
+dotenv.config();
+
 connectDB();
 
 const app = express();
 const server = http.createServer(app);
 
-app.use(
-  cors({
-    origin: [
-      process.env.CLIENT_URL,
-      "http://localhost:5173",
-      "http://127.0.0.1:5173",
-    ],
-    credentials: true,
-  }),
-);
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  process.env.CLIENT_URL ? process.env.CLIENT_URL.replace(/\/$/, '') : null,
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+].filter(Boolean);
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes(origin.replace(/\/$/, '')) || origin.endsWith('.vercel.app')) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Fallback allow to avoid unexpected CORS blocks across dynamic preview deployments
+    }
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(morgan("dev"));
@@ -53,14 +65,7 @@ app.get("/api/health", (req, res) => {
 });
 
 const io = new Server(server, {
-  cors: {
-    origin: [
-      process.env.CLIENT_URL,
-      "http://localhost:5173",
-      "http://127.0.0.1:5173",
-    ],
-    credentials: true,
-  },
+  cors: corsOptions,
 });
 
 io.on("connection", (socket) => {

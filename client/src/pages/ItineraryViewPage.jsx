@@ -17,6 +17,8 @@ const ItineraryViewPage = () => {
   const [itinerary, setItinerary] = useState(null);
   const [budget, setBudget] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isEditingBudget, setIsEditingBudget] = useState(false);
+  const [budgetValue, setBudgetValue] = useState('');
 
   useEffect(() => {
     const load = async () => {
@@ -32,6 +34,25 @@ const ItineraryViewPage = () => {
   const handleShare = () => {
     navigator.clipboard.writeText(`${window.location.origin}/public/${id}`);
     toast.success('Link copied to clipboard!');
+  };
+
+  const handleOpenBudgetEdit = () => {
+    setBudgetValue(budget?.totalBudget ? String(budget.totalBudget) : '');
+    setIsEditingBudget(true);
+  };
+
+  const handleSaveBudget = async () => {
+    try {
+      const val = Number(budgetValue) || 0;
+      await tripService.updateTrip(id, { totalBudget: val });
+      const b = await budgetService.getBudget(id);
+      setBudget(b);
+      setTrip(prev => ({ ...prev, totalBudget: val }));
+      setIsEditingBudget(false);
+      toast.success('Budget updated!');
+    } catch {
+      toast.error('Failed to update budget');
+    }
   };
 
   if (loading) return <LoadingSpinner />;
@@ -228,15 +249,60 @@ const ItineraryViewPage = () => {
         {/* Budget Sidebar */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ padding: '20px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(17,24,39,0.04)' }}>
-            <h3 className="font-display" style={{ fontSize: '15px', fontWeight: '700', color: '#111827', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Wallet style={{ width: '16px', height: '16px', color: '#2563EB' }} /> Budget Summary
-            </h3>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+              <h3 className="font-display" style={{ fontSize: '15px', fontWeight: '700', color: '#111827', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Wallet style={{ width: '16px', height: '16px', color: '#2563EB' }} /> Budget Summary
+              </h3>
+              <button
+                type="button"
+                onClick={() => isEditingBudget ? setIsEditingBudget(false) : handleOpenBudgetEdit()}
+                style={{
+                  background: 'none', border: 'none', color: '#2563EB', fontSize: '12px',
+                  fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px', padding: 0
+                }}
+              >
+                <Edit style={{ width: '12px', height: '12px' }} /> {isEditingBudget ? 'Cancel' : ((budget?.totalBudget > 0) ? 'Edit Budget' : 'Set Budget')}
+              </button>
+            </div>
+
+            {isEditingBudget && (
+              <div style={{
+                marginBottom: '16px', padding: '12px', borderRadius: '12px',
+                background: '#F8FAFC', border: '1px solid #E2E8F0', display: 'flex', gap: '8px', alignItems: 'center'
+              }}>
+                <div style={{ position: 'relative', flex: 1 }}>
+                  <span style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', fontWeight: 700, color: '#64748B', fontSize: '13px' }}>₹</span>
+                  <input
+                    type="number"
+                    value={budgetValue}
+                    onChange={e => setBudgetValue(e.target.value)}
+                    placeholder="Enter total budget"
+                    className="input-field"
+                    style={{ paddingLeft: '24px', height: '36px', fontSize: '13px', background: '#FFFFFF' }}
+                    autoFocus
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSaveBudget}
+                  className="btn-primary"
+                  style={{ padding: '8px 14px', fontSize: '12px', height: '36px', borderRadius: '10px' }}
+                >
+                  Save
+                </button>
+              </div>
+            )}
+
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
               {[
-                { l: 'Total', v: `₹${budget?.totalBudget || 0}`, c: '#111827' },
-                { l: 'Spent', v: `₹${budget?.totalSpent || 0}`, c: overBudget ? '#BA1A1A' : '#2563EB' },
-                { l: 'Remaining', v: `₹${budget?.remaining || 0}`, c: '#059669' },
-                { l: 'Avg/Day', v: `₹${dayCount > 0 ? ((budget?.totalSpent || 0) / dayCount).toFixed(0) : 0}`, c: '#7C3AED' },
+                { l: 'Total', v: `₹${(budget?.totalBudget || 0).toLocaleString()}`, c: '#111827' },
+                { l: 'Spent', v: `₹${(budget?.totalSpent || 0).toLocaleString()}`, c: overBudget ? '#BA1A1A' : '#2563EB' },
+                {
+                  l: 'Remaining',
+                  v: (budget?.totalBudget > 0) ? `₹${(budget?.remaining || 0).toLocaleString()}` : '₹0',
+                  c: (budget?.totalBudget > 0) ? ((budget?.remaining || 0) < 0 ? '#BA1A1A' : '#059669') : '#64748B',
+                },
+                { l: 'Avg/Day', v: `₹${dayCount > 0 ? Math.round((budget?.totalSpent || 0) / dayCount).toLocaleString() : 0}`, c: '#7C3AED' },
               ].map(s => (
                 <div key={s.l} style={{
                   padding: '12px', borderRadius: '12px',

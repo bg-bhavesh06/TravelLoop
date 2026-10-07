@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, GripVertical, Save, Sparkles, Calendar, DollarSign, ListChecks } from 'lucide-react';
+import { Plus, Trash2, GripVertical, Save, Sparkles, Calendar, DollarSign, ListChecks, Wallet } from 'lucide-react';
 import { tripService } from '../services/tripService';
 import { itineraryService } from '../services/itineraryService';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -14,6 +14,7 @@ const ItineraryBuilderPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [trip, setTrip] = useState(null);
+  const [totalBudget, setTotalBudget] = useState('');
   const [sections, setSections] = useState([emptySection()]);
   const [itineraryId, setItineraryId] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -22,7 +23,9 @@ const ItineraryBuilderPage = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const t = await tripService.getTrip(id); setTrip(t);
+        const t = await tripService.getTrip(id);
+        setTrip(t);
+        setTotalBudget(t.totalBudget ? String(t.totalBudget) : '');
         try {
           const itin = await itineraryService.getItinerary(id);
           if (itin?.sections?.length) { setSections(itin.sections); setItineraryId(itin._id); }
@@ -50,7 +53,13 @@ const ItineraryBuilderPage = () => {
 
   const handleSave = async () => {
     setSaving(true);
-    try { const res = await itineraryService.createOrUpdate(id, sections); setItineraryId(res._id); toast.success('Itinerary saved!'); }
+    try {
+      await Promise.all([
+        itineraryService.createOrUpdate(id, sections),
+        tripService.updateTrip(id, { totalBudget: Number(totalBudget) || 0 })
+      ]);
+      toast.success('Itinerary & budget saved!');
+    }
     catch { toast.error('Failed to save'); }
     finally { setSaving(false); }
   };
@@ -88,6 +97,40 @@ const ItineraryBuilderPage = () => {
         >
           <Save style={{ width: '15px', height: '15px' }} /> {saving ? 'Saving...' : 'Save Itinerary'}
         </motion.button>
+      </div>
+
+      {/* Trip Budget Banner */}
+      <div style={{
+        background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', padding: '18px 24px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px',
+        boxShadow: '0 1px 3px rgba(17,24,39,0.04)',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{
+            width: '40px', height: '40px', borderRadius: '12px',
+            background: 'rgba(37, 99, 235, 0.08)', border: '1px solid rgba(37, 99, 235, 0.15)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <Wallet style={{ width: '20px', height: '20px', color: '#2563EB' }} />
+          </div>
+          <div>
+            <h4 className="font-display" style={{ fontSize: '15px', fontWeight: '700', color: '#111827', margin: 0 }}>Total Trip Budget</h4>
+            <p style={{ fontSize: '12px', color: '#64748B', margin: 0 }}>Set an overall budget for this trip (saved automatically with itinerary)</p>
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ position: 'relative', width: '180px' }}>
+            <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', fontWeight: '700', color: '#64748B', fontSize: '14px' }}>₹</span>
+            <input
+              type="number"
+              value={totalBudget}
+              onChange={e => setTotalBudget(e.target.value)}
+              placeholder="0"
+              className="input-field"
+              style={{ paddingLeft: '28px', fontWeight: '700', fontSize: '15px' }}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Sections */}

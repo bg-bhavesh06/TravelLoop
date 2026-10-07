@@ -28,8 +28,15 @@ const BudgetPage = () => {
   const stats = [
     { label: 'Total Budget', val: `₹${(budget?.totalBudget || 0).toLocaleString()}`, icon: Wallet, color: '#2563EB', bg: 'rgba(37, 99, 235, 0.06)', border: 'rgba(37, 99, 235, 0.15)' },
     { label: 'Spent', val: `₹${(budget?.totalSpent || 0).toLocaleString()}`, icon: TrendingDown, color: over ? '#BA1A1A' : '#7C3AED', bg: over ? 'rgba(186, 26, 26, 0.06)' : 'rgba(124, 58, 237, 0.06)', border: over ? 'rgba(186, 26, 26, 0.15)' : 'rgba(124, 58, 237, 0.15)' },
-    { label: 'Remaining', val: `₹${(budget?.remaining || 0).toLocaleString()}`, icon: TrendingUp, color: '#059669', bg: 'rgba(5, 150, 105, 0.06)', border: 'rgba(5, 150, 105, 0.15)' },
-    { label: 'Avg / Day', val: `₹${days ? ((budget?.totalSpent || 0) / days).toFixed(0) : 0}`, icon: DollarSign, color: '#06B6D4', bg: 'rgba(6, 182, 212, 0.06)', border: 'rgba(6, 182, 212, 0.15)' },
+    {
+      label: 'Remaining',
+      val: (budget?.totalBudget > 0) ? `₹${(budget?.remaining || 0).toLocaleString()}` : '₹0',
+      icon: TrendingUp,
+      color: (budget?.totalBudget > 0 && budget?.remaining < 0) ? '#BA1A1A' : '#059669',
+      bg: (budget?.totalBudget > 0 && budget?.remaining < 0) ? 'rgba(186, 26, 26, 0.06)' : 'rgba(5, 150, 105, 0.06)',
+      border: (budget?.totalBudget > 0 && budget?.remaining < 0) ? 'rgba(186, 26, 26, 0.15)' : 'rgba(5, 150, 105, 0.15)',
+    },
+    { label: 'Avg / Day', val: `₹${days ? Math.round((budget?.totalSpent || 0) / days).toLocaleString() : 0}`, icon: DollarSign, color: '#06B6D4', bg: 'rgba(6, 182, 212, 0.06)', border: 'rgba(6, 182, 212, 0.15)' },
   ];
 
   return (
